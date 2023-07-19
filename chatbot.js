@@ -19,8 +19,6 @@ function openChat() {
  */
 function closeChat() {
 
-    let timestamp = new Date().getTime()
-
     let divs = document.querySelectorAll("#conversation > div")
 
     divs.forEach(qf=>{
@@ -28,7 +26,7 @@ function closeChat() {
     })
 
     document.querySelector("#conversation").innerHTML += `
-                    <div class="qf text-center disc_${timestamp}">
+                    <div class="qf text-center popup_exit">
                         <div class="qb vh hi vj yr el yl">
                         <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
                         <div class="p-4">
@@ -39,9 +37,7 @@ function closeChat() {
                         
                     </div>`
 
-    document.querySelector(".disc_"+timestamp).scrollIntoView();
-
-    localStorage.setItem("class_chatbot", ".disc_"+timestamp);
+    document.querySelector(".popup_exit").scrollIntoView();
 
 }
 
@@ -69,9 +65,8 @@ function escapeChat() {
         qf.style=""
     })
 
-    let classs = localStorage.getItem("class_chatbot");
-    if(document.querySelector(classs)){
-        document.querySelector(classs).remove()
+    if(document.querySelector(".popup_exit")){
+        document.querySelector(".popup_exit").remove()
     }
 
     document.querySelector("#conversation > div:nth-child("+divs_len+")").scrollIntoView();
@@ -131,6 +126,10 @@ function runSuggestion() {
     `
 
     setTimeout(function(){
+
+        if(document.querySelector(".dot-spinner")){
+            document.querySelector(".dot-spinner").remove();
+        }
 
         document.querySelector("#conversation").innerHTML += sugg
 
@@ -350,7 +349,7 @@ function writeResponse(response, menu=false) {
             let btn_menu =""
             
             if(menu==true){
-                btn_menu = `<button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 h-100 p-1" onclick="runSuggestion()">🏡 Menu principal</button>`
+                btn_menu = `<button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 h-100 p-1" onclick="menu()">🏡 Menu principal</button>`
             }
 
             document.querySelector("#conversation").innerHTML += `<div class="qf disc_${timestamp}">
@@ -367,6 +366,13 @@ function writeResponse(response, menu=false) {
     }
 
 
+}
+
+function menu() {
+
+    runSpinner()
+
+    runSuggestion()
 }
 /***********************Action*************** */
 
