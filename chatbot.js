@@ -11,6 +11,7 @@ function openChat() {
     document.querySelector("#chat_container").style="width:28vw;height:92vh; position: fixed;bottom: 0; right: 0; z-index:1003;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;display: none;"
     //document.querySelector("#conversation").innerHTML =""
+    document.querySelector("#chat_header").style="display:";
 }
 
 /**
@@ -27,7 +28,8 @@ function closeChat() {
 
     document.querySelector("#conversation").innerHTML += `
                     <div class="qf text-center popup_exit">
-                        <div class="qb vh hi vj yr el yl">
+                        <i class="fas fa-close icon_exit" onclick="escapeChat()"></i>
+                        <div class="qb vh hi vj yr el yl popup_exit_int">
                         <p>Voulez-vous vraiment mettre fin à la conversation ?</p>
                         <div class="p-4">
                             <button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 p-1 h-100 btn_b" onclick="endChat()">Fin de conversation</button>
@@ -36,7 +38,7 @@ function closeChat() {
                         </div>
                         
                     </div>`
-
+    
     document.querySelector(".popup_exit").scrollIntoView();
 
 }
@@ -46,9 +48,12 @@ function closeChat() {
  * @constructor
  */
 function endChat() {
+    
     document.querySelector("#chat_container").style="width:70px;height:70px; position: fixed;bottom: 0; right: 0; z-index:1003;background-color:transparent;"
     document.querySelector("#openChat").style="background-color: #0d6efd;width:40px;height:40px;color:white;border-radius:8px;cursor:pointer;"
     document.querySelector("#conversation").innerHTML =""
+    document.querySelector("#closeChat").disabled = false
+    document.querySelector("#chat_header").style="display:none"; 
 }
 
 /**
@@ -56,6 +61,8 @@ function endChat() {
  * @constructor
  */
 function escapeChat() {
+
+    document.querySelector("#closeChat").disabled = false
 
     let divs = document.querySelectorAll("#conversation > div")
 
@@ -114,7 +121,7 @@ function runSuggestion() {
     })
    
     let sugg = `
-        <div class="qf disc_${timestamp}">
+        <div class="qf disc_${timestamp}" onmouseover="showTime(this)">
             <div class="qb vh hi vj yr el yl">
                 <p>Que veux-tu savoir aujourd'hui ?</p>
                 <div class="text-center">
@@ -136,6 +143,14 @@ function runSuggestion() {
         document.querySelector(".disc_"+timestamp).scrollIntoView();
 
     },1500)
+
+    document.querySelectorAll("#conversation > div ").forEach(div=>{
+        div.addEventListener("click", function(){
+            //e.nextElementSibling.style = "color : #212529;"
+            //console.log(e.nextElementSibling);
+            alert("eeeeeeeeeto");
+        })
+    })
 
 }
 
@@ -186,7 +201,7 @@ function getResponse(cle, dico) {
 
             if(typeof value === 'object'){
 
-                template += `<div class="qf disc_${timestamp}">
+                template += `<div class="qf disc_${timestamp}" onmouseover="showTime(this)">
                         <div class="qb vh hi vj yr el yl">
                             <p> Que veux-tu savoir aujourd'hui ?</p>
                             <div class="text-center">`
@@ -265,7 +280,7 @@ function searchResultKey(q) {
 
         q = q.normalize("NFD").replace(/\p{Diacritic}/gu, "")
 
-        if(cle.trim().toLowerCase().includes(q.trim().toLowerCase())){
+        if(q.trim().toLowerCase().includes(cle.trim().toLowerCase())){
 
             response = valeur
 
@@ -317,7 +332,7 @@ function writeRequest(request) {
     let timestamp = new Date().getTime()
 
     if(request){
-        document.querySelector("#conversation").innerHTML += `<div class="qf rb disc_${timestamp}">
+        document.querySelector("#conversation").innerHTML += `<div class="qf rb disc_${timestamp}" onmouseover="showTime(this)">
             <div class="qb vh ii oj el yl">
             <p class="eo">${request}</p>
             </div>
@@ -352,7 +367,7 @@ function writeResponse(response, menu=false) {
                 btn_menu = `<button class="ad lc mg pg th ni bj wr nj yr oq qq _q ks w-100 mb-1 h-100 p-1" onclick="menu()">🏡 Menu principal</button>`
             }
 
-            document.querySelector("#conversation").innerHTML += `<div class="qf disc_${timestamp}">
+            document.querySelector("#conversation").innerHTML += `<div class="qf disc_${timestamp}" onmouseover="showTime(this)">
                     <div class="qb vh hi vj yr el yl">
                     <p>${response}</p>
                         ${btn_menu}
@@ -373,6 +388,14 @@ function menu() {
     runSpinner()
 
     runSuggestion()
+}
+
+function showTime(elem) {
+    elem.querySelector("p.nn").style="color:black !important;"
+
+    elem.onmouseout = function(event) {
+        elem.querySelector("p.nn").style="color:white !important;"
+      };
 }
 /***********************Action*************** */
 
@@ -443,10 +466,10 @@ let dico = {
 }
 
 let dico_specifique = {
+    "je m'appelle" : "Enchanté, je m'appelle ConsoMyZone.",
     "ca va" : "👨‍⚕️ Je vais bien, merci.",
-    "ca va?" : "👨‍⚕️ Je vais bien, merci.",
-    "comment ca va?" : "👨‍⚕️ Je vais bien, merci.",
     "au revoir" : "👋 Merci, à bientôt.",
+    "va tu" : "👨‍⚕️ Je vais bien, merci.",
     "bye bye" : "👋 Merci, à bientôt.",
     "station service" : "L'opérateur station-service est en rapport direct avec la clientèle : service en carburant (si station traditionnelle), encaissement des sommes des marchandises ou services vendus sont ses tâches principales. Pour voir plus dans CMZ, veuillez consulter <a href='/station'> ici</a>.",
     "sp 95" : "Le SP95-E10 est l'essence sans plomb qui contient jusqu'à 10% d'éthanol en volume. Le SP95 contient 7,5 % d'éthanol (en pur ou en dérivé). Pour voir plus dans CMZ, veuillez consulter <a href='/station'> ici</a>.",
@@ -466,7 +489,7 @@ let dico_response = {
 }
 
 let main_suggestion = {
-    def_cmz : "📌 C'est quoi ConsoMyZone ou CMZ ?",
+    def_cmz : "📌 A propos de ConsoMyZone?",
     serv_cmz :"♻️ Quelles services chez CMZ ?",
     use_cmz :"🛠️ Nécessaire pour quel CMZ ?",
     connect_cmz :"🏘️ Partie connecté de CMZ ?",
@@ -481,13 +504,16 @@ document.querySelector("#openChat").addEventListener("click", function(){
     runSpinner()
 
     //Salutation
-    writeResponse("👋 Bonjour! Je suis CMZ Chatbot. Je peux repondre à vos question.")
+    writeResponse("👋 Bonjour, bienvenue sur le site! Que pouvons-nous faire pour vous aider?")
 
     runSuggestion()
 
+
 })
 
-document.querySelector("#closeChat").addEventListener("click", function(){
+document.querySelector("#closeChat").addEventListener("click", function(e){
+
+    document.querySelector("#closeChat").disabled = true
 
     closeChat()
 
@@ -512,4 +538,3 @@ document.querySelector("#btn-send").addEventListener("click", function(e){
     document.querySelector("#text-search").value =""
     
 })
-
